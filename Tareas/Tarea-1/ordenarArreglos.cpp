@@ -142,12 +142,12 @@ int main(){
     quickSort(array3, 0, N - 1);
     auto stop3 = high_resolution_clock::now(); // Captura el tiempo de finalización
     auto duration3 = duration_cast<microseconds>(stop3 - start3); // Calcula la duración
-    cout << "Tiempo del merge quick sort: " << duration3.count() << " microsegundos" <<endl;
+    cout << "Tiempo del quick sort: " << duration3.count() << " microsegundos" <<endl;
 
     auto start4 = high_resolution_clock::now(); // Captura el tiempo de inicio
     selectionSort(array4, array4.size());
     auto stop4 = high_resolution_clock::now(); // Captura el tiempo de finalización
     auto duration4 = duration_cast<microseconds>(stop4 - start4); // Calcula la duración
-    cout << "Tiempo del selection sort: " << duration3.count() << " microsegundos" <<endl;
+    cout << "Tiempo del selection sort: " << duration4.count() << " microsegundos" <<endl;
     return 0;
 }
