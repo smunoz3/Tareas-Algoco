@@ -2,6 +2,7 @@
 #include <chrono>
 #include <random>
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 using namespace std::chrono;
