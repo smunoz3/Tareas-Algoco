@@ -6,8 +6,23 @@
 using namespace std;
 using namespace std::chrono;
 
+// https://www.geeksforgeeks.org/c-program-multiply-two-matrices/
+/*
+La función `multiplicarMatricesTradicional` multiplica dos matrices cuadradas (de tamaño n x n) de manera tradicional, utilizando tres bucles anidados.
 
-void multiplicarMatricesTradicional(int** A, int** B, int** C, int n) { // https://www.geeksforgeeks.org/c-program-multiply-two-matrices/
+1. La función utiliza tres bucles anidados:
+   - El primer bucle (índice `i`) itera sobre las filas de la matriz A.
+   - El segundo bucle (índice `j`) itera sobre las columnas de la matriz B.
+   - El tercer bucle (índice `k`) se utiliza para calcular el producto y acumulación de los elementos correspondientes de la fila de A y la columna de B.
+   
+2. Inicialmente, se establece cada elemento de la matriz de salida `C[i][j]` en 0.
+
+3. Luego, se realiza la multiplicación de cada elemento correspondiente de la fila `i` de A con la columna `j` de B y se suma al valor acumulado de `C[i][j]`.
+
+4. Al final, la matriz C contiene el resultado de la multiplicación matricial de A * B.
+*/
+
+void multiplicarMatricesTradicional(int** A, int** B, int** C, int n) { 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             C[i][j] = 0;
@@ -17,6 +32,22 @@ void multiplicarMatricesTradicional(int** A, int** B, int** C, int n) { // https
         }
     }
 }
+
+/*
+La función `transponeMatriz` realiza la transposición de una matriz cuadrada (de tamaño n x n) en su lugar, es decir, sin necesidad de utilizar una matriz auxiliar.
+
+Funcionamiento:
+1. Se utilizan dos bucles anidados:
+   - El primer bucle (índice `i`) itera sobre las filas de la matriz.
+   - El segundo bucle (índice `j`) itera sobre las columnas, comenzando desde `i + 1` para evitar repetir o sobreescribir elementos innecesariamente, ya que la matriz transpuesta intercambia los elementos de la posición `[i][j]` con `[j][i]`.
+   
+2. Para cada par de elementos que no están en la diagonal principal, se realiza el intercambio:
+   - Se almacena el valor de `B[i][j]` en una variable temporal `temp`.
+   - Luego se asigna a `B[i][j]` el valor de `B[j][i]`.
+   - Finalmente, se asigna a `B[j][i]` el valor almacenado en `temp`.
+
+3. Al final, la matriz original `B` queda transpuesta en su lugar.
+*/
 
 void transponeMatriz(int** B, int n) {
     for (int i = 0; i < n; ++i) {
@@ -28,6 +59,24 @@ void transponeMatriz(int** B, int n) {
     }
 }
 
+/*
+La función `multiplyMatricesTranspuesta` multiplica dos matrices cuadradas (de tamaño n x n), pero con la diferencia de que primero transpone la matriz `B` para mejorar la eficiencia en el acceso a la memoria durante la multiplicación.
+
+Funcionamiento:
+1. Primero, se transpone la matriz `B` utilizando la función `transponeMatriz(B, n)`. Esto intercambia las filas por columnas en la matriz `B`, lo que permite acceder a los elementos de `B` de manera más eficiente en la memoria durante la multiplicación.
+
+2. Luego, se utilizan tres bucles anidados:
+   - El primer bucle (índice `i`) recorre las filas de la matriz `A`.
+   - El segundo bucle (índice `j`) recorre las columnas de la matriz `B` transpuesta.
+   
+3. Dentro del segundo bucle, se inicializa la variable `temp` en 0, que almacenará el valor del producto escalar entre la fila `i` de `A` y la columna `j` de la matriz `B` transpuesta (que es ahora una fila original de `B`).
+
+4. El tercer bucle (índice `k`) realiza la multiplicación entre los elementos correspondientes de la fila `i` de `A` y la fila `j` (columna original) de la matriz `B` transpuesta, acumulando el resultado en `temp`.
+
+5. Al finalizar el tercer bucle, el valor acumulado en `temp` se asigna a `C[i][j]`, que es el resultado de la multiplicación para la posición `[i][j]` en la matriz resultado `C`.
+
+6. Al final, la matriz `C` contiene el producto de `A` y la matriz original `B`.
+*/
 
 void multiplyMatricesTranspuesta(int** A, int** B, int** C, int n) {
     transponeMatriz(B,n);
@@ -43,6 +92,18 @@ void multiplyMatricesTranspuesta(int** A, int** B, int** C, int n) {
     }
 }
 
+/*
+La función `add` suma dos matrices cuadradas (de tamaño mSize x mSize) y almacena el resultado en una tercera matriz.
+
+Funcionamiento:
+1. Se utilizan dos bucles anidados:
+   - El primer bucle (índice `i`) recorre las filas de las matrices `matrixA` y `matrixB`.
+   - El segundo bucle (índice `j`) recorre las columnas de las matrices `matrixA` y `matrixB`.
+
+2. En cada iteración, se suman los elementos correspondientes de `matrixA[i][j]` y `matrixB[i][j]`, y el resultado se almacena en `matrixC[i][j]`.
+
+3. Al finalizar ambos bucles, la matriz `matrixC` contendrá la suma elemento por elemento de las matrices `matrixA` y `matrixB`.
+*/
 
 void add(int** matrixA, int** matrixB, int** matrixC, unsigned int mSize) {
     for (int i = 0; i < mSize; i++) {
@@ -52,6 +113,19 @@ void add(int** matrixA, int** matrixB, int** matrixC, unsigned int mSize) {
     }
 }
 
+/*
+La función `sub` resta dos matrices cuadradas (de tamaño mSize x mSize) y almacena el resultado en una tercera matriz.
+
+Funcionamiento:
+1. Se utilizan dos bucles anidados:
+   - El primer bucle (índice `i`) recorre las filas de las matrices `matrixA` y `matrixB`.
+   - El segundo bucle (índice `j`) recorre las columnas de las matrices `matrixA` y `matrixB`.
+
+2. En cada iteración, se realiza la resta de los elementos correspondientes de `matrixA[i][j]` menos `matrixB[i][j]`, y el resultado se almacena en `matrixC[i][j]`.
+
+3. Al finalizar ambos bucles, la matriz `matrixC` contendrá la resta elemento por elemento de las matrices `matrixA` y `matrixB`.
+*/
+
 void sub(int** matrixA, int** matrixB, int** matrixC, unsigned int mSize) {
     for (int i = 0; i < mSize; i++) {
         for (int j = 0; j < mSize; j++) {
@@ -60,16 +134,29 @@ void sub(int** matrixA, int** matrixB, int** matrixC, unsigned int mSize) {
     }   
 }
 
+// fuente: https://github.com/dmonaldo/strassen-matrix-multiplication 
+/*
+La función `strassenR` implementa el algoritmo de Strassen para la multiplicación de matrices cuadradas de tamaño `mSize x mSize`. Este algoritmo es más eficiente que la multiplicación tradicional, ya que reduce la complejidad temporal de O(n^3) a aproximadamente O(n^2.81), utilizando una estrategia de divide y vencerás.
 
-void printMatrix(int** matrix, unsigned int mSize) {
-    for (int i = 0; i < mSize; i++) {
-        for (int j = 0; j < mSize; j++) {
-            cout << matrix[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
+Funcionamiento:
+1. **Caso base**: Si el tamaño de la matriz (`mSize`) es 1, simplemente se multiplica el único elemento de `matrixA` y `matrixB` y se almacena el resultado en `matrixC`.
+
+2. **División**: Si el tamaño es mayor que 1, el algoritmo divide las matrices `matrixA` y `matrixB` en submatrices de tamaño `newMSize` (que es `mSize / 2`):
+   - `matrixA` se divide en `matrixA11`, `matrixA12`, `matrixA21`, y `matrixA22`.
+   - `matrixB` se divide en `matrixB11`, `matrixB12`, `matrixB21`, y `matrixB22`.
+
+3. **Cálculo de las sumas y restas auxiliares**: Se calculan varias matrices auxiliares (`s1` a `s10`) a partir de las submatrices de `matrixA` y `matrixB`, usando operaciones de suma y resta.
+
+4. **Cálculo de los productos auxiliares**: Se realizan las llamadas recursivas a la función `strassenR` para calcular los productos intermedios `p1` a `p7`, utilizando las submatrices de `matrixA`, `matrixB`, y las matrices auxiliares.
+
+5. **Combinación de resultados**: Una vez calculados los productos, se combinan usando sumas y restas para formar las submatrices `matrixC11`, `matrixC12`, `matrixC21`, y `matrixC22` que componen la matriz resultante `matrixC`.
+
+6. **Reconstrucción de la matriz original**: Las submatrices `matrixC11`, `matrixC12`, `matrixC21`, y `matrixC22` se ensamblan en la matriz final `matrixC`.
+
+7. **Liberación de memoria**: Al final, se libera la memoria asignada dinámicamente para las submatrices, matrices auxiliares, y productos intermedios.
+
+Este método es más eficiente para matrices grandes debido a la reducción en la cantidad de multiplicaciones necesarias.
+*/
 
 void strassenR(int** matrixA, int** matrixB, int** matrixC, unsigned int mSize) {
     if (mSize == 1) {
@@ -262,23 +349,11 @@ void strassenR(int** matrixA, int** matrixB, int** matrixC, unsigned int mSize) 
 }
 
 
-void imprimirMatriz(int** matriz, int tamaño) {
-    for (int i = 0; i < tamaño; ++i) {
-        for (int j = 0; j < tamaño; ++j) {
-            std::cout << matriz[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
-
-
 int main(){
     int n;
     cout << "Ingrese el tamaño de las matrices: ";
     cin >> n;
     srand(time(0));
-
 
     int** A = new int*[n];
     int** B = new int*[n]; 
@@ -290,7 +365,6 @@ int main(){
         C[i] = new int[n];
     }
 
-    // Llena las matrices
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             A[i][j]=rand() % 10;
@@ -303,26 +377,23 @@ int main(){
         }
     }
 
-    auto start = high_resolution_clock::now(); // Captura el tiempo de inicio
-    multiplicarMatricesTradicional(A, B, C, n); // Multiplicar matrices
-    auto stop = high_resolution_clock::now(); // Captura el tiempo de finalización
-    auto duration = duration_cast<microseconds>(stop - start); // Calcula la duración
+    auto start = high_resolution_clock::now(); 
+    multiplicarMatricesTradicional(A, B, C, n);
+    auto stop = high_resolution_clock::now(); 
+    auto duration = duration_cast<microseconds>(stop - start); 
     cout << "Tiempo algotitmo tradicional: " << duration.count() << " microsegundos" << endl;
 
-
-    auto start2 = high_resolution_clock::now(); // Captura el tiempo de inicio
-    multiplyMatricesTranspuesta(A, B, C, n); // Multiplicar matrices
-    auto stop2 = high_resolution_clock::now(); // Captura el tiempo de finalización
-    auto duration2 = duration_cast<microseconds>(stop2 - start2); // Calcula la duración
+    auto start2 = high_resolution_clock::now(); 
+    multiplyMatricesTranspuesta(A, B, C, n);
+    auto stop2 = high_resolution_clock::now(); 
+    auto duration2 = duration_cast<microseconds>(stop2 - start2); 
     cout << "Tiempo algotitmo transponiendo la matriz: " << duration2.count() << " microsegundos" << endl;
 
-
-    auto start3 = high_resolution_clock::now(); // Captura el tiempo de inicio
-    strassenR(A, B, C, n); // Multiplicar matrices
-    auto stop3 = high_resolution_clock::now(); // Captura el tiempo de finalización
-    auto duration3 = duration_cast<microseconds>(stop3 - start3); // Calcula la duración
+    auto start3 = high_resolution_clock::now(); 
+    strassenR(A, B, C, n); 
+    auto stop3 = high_resolution_clock::now(); 
+    auto duration3 = duration_cast<microseconds>(stop3 - start3); 
     cout << "Tiempo algotitmo strassen: " << duration3.count() << " microsegundos" << endl;
-    
     
     return 0;
 }
