@@ -1,13 +1,21 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-
-#include <sstream>   // Para manejar la conversión de cadena a número
-#include <stdexcept> // Para manejar excepciones
+#include <algorithm>
+#include <sstream>
+#include <string>
+#include <stdexcept>
+#include <climits>
+#include <limits>
 
 using namespace std;
 
-vector<vector<int>> leerMatriz(const string nombreArchivo) {
+vector<vector<int>> matrizReplace(26, vector<int>(26));
+vector<vector<int>> matrizTranspose(26, vector<int>(26));
+vector<int> vectorInsert;
+vector<int> vectorDelete;
+
+vector<vector<int>> leerMatriz(const string& nombreArchivo) {
     ifstream archivo(nombreArchivo);
     vector<vector<int>> matriz(26, vector<int>(26)); // Matriz 26x26
 
@@ -31,94 +39,132 @@ vector<vector<int>> leerMatriz(const string nombreArchivo) {
     return matriz;
 }
 
-std::vector<int> leerVector(const std::string nombre_archivo) {
-    std::ifstream archivo(nombre_archivo);
-    
+vector<int> leerVector(const string& nombreArchivo) {
+    ifstream archivo(nombreArchivo);
     if (!archivo.is_open()) {
-        throw std::runtime_error("No se pudo abrir el archivo.");
+        throw runtime_error("No se pudo abrir el archivo.");
     }
 
-    std::string linea;
-    std::getline(archivo, linea);
-    
-    std::stringstream ss(linea); 
-    std::vector<int> vector;
-    int numero;
-    char separador;
-
-    while (ss >> numero) {
-        vector.push_back(numero);
-        ss >> separador;
+    vector<int> vector(26);
+    for (int i = 0; i < 26; ++i) {
+        archivo >> vector[i];
+        if (archivo.fail()) {
+            throw runtime_error("Error al leer el archivo de vector.");
+        }
     }
 
-    // Verificar que se leyeron exactamente 26 números
     if (vector.size() != 26) {
-        throw std::invalid_argument("El archivo no contiene exactamente 26 números.");
+        throw invalid_argument("El archivo no contiene exactamente 26 números.");
     }
     
     archivo.close();
     return vector;
 }
 
+void cargarMatrices() {
+    matrizReplace = leerMatriz("cost_replace.txt");
+    matrizTranspose = leerMatriz("cost_transpose.txt");
+    vectorInsert = leerVector("cost_insert.txt");
+    vectorDelete = leerVector("cost_delete.txt");
+}
+
 int letra_a_numero(char letra) {
     letra = toupper(letra);
-
     if (letra >= 'A' && letra <= 'Z') {
         return letra - 'A';
     } else {
-        throw std::invalid_argument("La letra debe estar entre A y Z");
+        throw invalid_argument("La letra debe estar entre A y Z");
     }
 }
 
 int costo_sub (char a, char b) {
     int costo;
-    vector<vector<int>> matriz = leerMatriz("cost_replace.txt");
-    costo=matriz[letra_a_numero(a)][letra_a_numero(b)];
+    costo=matrizReplace[letra_a_numero(a)][letra_a_numero(b)];
     return costo;
 }
 
 int costo_ins (char b) {
     int costo;
-    vector<int> vector = leerVector("cost_insert.txt");
-    costo=vector[letra_a_numero(b)];
+    costo=vectorInsert[letra_a_numero(b)];
     return costo;
 }
 
 int costo_del (char a) {
     int costo;
-    vector<int> vector = leerVector("cost_delete.txt");
-    costo=vector[letra_a_numero(a)];
+    costo=vectorDelete[letra_a_numero(a)];
     return costo;
 }
 
 int costo_trans (char a, char b) {
     int costo;
-    vector<vector<int>> matriz = leerMatriz("cost_transpose.txt");
-    costo=matriz[letra_a_numero(a)][letra_a_numero(b)];
+    costo=matrizTranspose[letra_a_numero(a)][letra_a_numero(b)];
     return costo;
 }
 
+int calcularCosto(const string& palabra1, const string& palabra2) {
+    int costoTotal = 0;
+    int largoP1 = palabra1.size();
+    int largoP2 = palabra2.size();
+    int n = min(largoP1, largoP2);
+    int i = 0;
+
+    while (i < n) {
+        if (i + 1 < n && palabra1[i + 1] == palabra2[i] && palabra1[i] == palabra2[i + 1]) {
+            costoTotal += costo_trans(palabra1[i], palabra1[i + 1]);
+            i += 2;
+        } else {
+            costoTotal += costo_sub(palabra1[i], palabra2[i]);
+            ++i;
+        }
+    }
+
+    // Insert or delete costs for remaining characters
+    for (; i < largoP2; ++i) {
+        costoTotal += costo_ins(palabra2[i]);
+    }
+    for (; i < largoP1; ++i) {
+        costoTotal += costo_del(palabra1[i]);
+    }
+
+    return costoTotal;
+}
 
 int main() {
-    string palabra1;
-    string palabra2;
-    int largoP1=palabra1.size();
-    int largoP2=palabra2.size();
-    int costoMin = INT_MAX;
-    int costo1=0;
-    int costo2=0;
-    //Palabra1 a Palabra2
+    cargarMatrices();
+    ifstream archivo("palabras.txt");
+    ofstream archivo_salida("resultado.txt");
+    int N;
 
-    for(int i=0;i<largoP1;i++){
-        if((i<largoP1 && i<largoP2) //Revisa rango 
-        && (palabra1[i+1]==palabra2[i]) &&(palabra1[i]==palabra2[i+1])){
-            costo1 += costo_trans(palabra1[i],palabra1[i+1]);
-            i+=1;
-        }
-        palabra1[i];
+    if (!archivo) {
+        cerr << "No se pudo abrir el archivo." << endl;
+        return 1;
+    }
+    if (!archivo_salida) {
+        cerr << "No se pudo abrir el archivo de salida." << endl;
+        return 1;
+    }
 
+    archivo >> N;
+    archivo.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    }    
+    for (int i = 0; i < N; ++i) {
+        string linea;
+        getline(archivo, linea);
+
+        stringstream ss(linea);
+        string palabra1, palabra2;
+        getline(ss, palabra1, '|');
+        getline(ss, palabra2, '|');
+
+        int costo1 = calcularCosto(palabra1, palabra2);
+        int costo2 = calcularCosto(palabra2, palabra1);
+        int costoMin = min(costo1, costo2);
+        
+        archivo_salida << costo1 << " " << costo2 << " " << costoMin << endl;
+    }
+
+    archivo.close();
+    archivo_salida.close();
 
     return 0;
 }
