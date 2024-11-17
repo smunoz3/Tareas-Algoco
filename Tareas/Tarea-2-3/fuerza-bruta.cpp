@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <climits>
 #include <limits>
+#include <chrono>
+#include <algorithm>
 
 using namespace std;
 
@@ -149,6 +151,7 @@ int main() {
 
     for (int i = 0; i < N; ++i) {
         string linea;
+        auto inicio = std::chrono::high_resolution_clock::now();  
         getline(archivo, linea);
 
         stringstream ss(linea);
@@ -159,8 +162,11 @@ int main() {
         int costo1 = calcularCosto(palabra1, palabra2);
         int costo2 = calcularCosto(palabra2, palabra1);
         int costoMin = min(costo1, costo2);
-        
-        archivo_salida << costo1 << " " << costo2 << " " << costoMin << endl;
+        auto fin = std::chrono::high_resolution_clock::now();
+        auto duracion = std::chrono::duration_cast<std::chrono::milliseconds>(fin - inicio);
+
+
+        archivo_salida << "Palabras: " << linea << " Costo minimo: " << costoMin <<" Tiempo: "<< duracion.count()<<"ms"<< endl;
     }
 
     archivo.close();

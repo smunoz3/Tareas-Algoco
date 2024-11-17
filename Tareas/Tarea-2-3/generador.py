@@ -16,7 +16,7 @@ with open("palabras.txt", "w") as archivo:
     N = N * 2
     
     for _ in range(N):
-        L = random.randint(0, 20)  
+        L = random.randint(0, 30)  
         palabra = generar_palabra(L)
         
         archivo.write(f"{palabra}")
