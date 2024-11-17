@@ -5,28 +5,73 @@
 #include <string>
 #include <algorithm>
 #include <chrono>
+#include <unordered_map>
+#include <utility>
 
 using namespace std;
 
+// Diccionarios
+unordered_map<pair<char, char>, int, pair_hash> diccionarioReplace;
+unordered_map<char, int> diccionarioInsert;
+unordered_map<char, int> diccionarioDelete;
+unordered_map<pair<char, char>, int, pair_hash> diccionarioTranspose;
+
+struct pair_hash {
+    template <class T1, class T2>
+    size_t operator()(const pair<T1, T2>& pair) const {
+        return hash<T1>()(pair.first) ^ hash<T2>()(pair.second);
+    }
+};
+
+int letra_a_numero(char letra) {
+    letra = toupper(letra);
+    if (letra >= 'A' && letra <= 'Z') {
+        return letra - 'A';
+    } else {
+        throw invalid_argument("La letra debe estar entre A y Z");
+    }
+}
+
 int costo_sub(char a, char b) {
-    if (a == b) return 0;
-    // Ejemplo: retorna un costo fijo de 2 si 'a' y 'b' son diferentes
-    return 2;
+    pair<char, char> clave = {a, b};
+    if (diccionarioReplace.find(clave) != diccionarioReplace.end()) {
+        return diccionarioReplace[clave];
+    } else {
+        int costo = matrizReplace[letra_a_numero(a)][letra_a_numero(b)];
+        diccionarioReplace[clave] = costo; // Agregar al diccionario
+        return costo;
+    }
 }
 
 int costo_ins(char b) {
-    // Ejemplo: retorna un costo fijo de 1 para insertar cualquier carácter
-    return 1;
+    if (diccionarioInsert.find(b) != diccionarioInsert.end()) {
+        return diccionarioInsert[b];
+    } else {
+        int costo = vectorInsert[letra_a_numero(b)];
+        diccionarioInsert[b] = costo; // Agregar al diccionario
+        return costo;
+    }
 }
 
 int costo_del(char a) {
-    // Ejemplo: retorna un costo fijo de 1 para eliminar cualquier carácter
-    return 1;
+    if (diccionarioDelete.find(a) != diccionarioDelete.end()) {
+        return diccionarioDelete[a];
+    } else {
+        int costo = vectorDelete[letra_a_numero(a)];
+        diccionarioDelete[a] = costo; // Agregar al diccionario
+        return costo;
+    }
 }
 
 int costo_trans(char a, char b) {
-    // Ejemplo: retorna un costo fijo de 1 para transposición entre dos caracteres adyacentes
-    return 1;
+    pair<char, char> clave = {a, b};
+    if (diccionarioTranspose.find(clave) != diccionarioTranspose.end()) {
+        return diccionarioTranspose[clave];
+    } else {
+        int costo = matrizTranspose[letra_a_numero(a)][letra_a_numero(b)];
+        diccionarioTranspose[clave] = costo; // Agregar al diccionario
+        return costo;
+    }
 }
 
 // Función para calcular la distancia mínima de edición entre dos cadenas
@@ -38,7 +83,6 @@ int minEditDistance(const string &S1, const string &S2) {
     for (int i = 1; i <= n; i++) dp[i][0] = dp[i - 1][0] + costo_del(S1[i - 1]);
     for (int j = 1; j <= m; j++) dp[0][j] = dp[0][j - 1] + costo_ins(S2[j - 1]);
 
-    // Llenado de la matriz con costos mínimos de edición
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
             int costSub = dp[i - 1][j - 1] + costo_sub(S1[i - 1], S2[j - 1]);
@@ -47,7 +91,6 @@ int minEditDistance(const string &S1, const string &S2) {
             
             dp[i][j] = min({costSub, costIns, costDel});
             
-            // Verificar si se puede realizar una transposición
             if (i > 1 && j > 1 && S1[i - 1] == S2[j - 2] && S1[i - 2] == S2[j - 1]) {
                 int costTrans = dp[i - 2][j - 2] + costo_trans(S1[i - 1], S1[i - 2]);
                 dp[i][j] = min(dp[i][j], costTrans);
@@ -81,7 +124,7 @@ void procesarCasos(const string &filename) {
         string S1 = line.substr(0, pos);
         string S2 = line.substr(pos + 1);
         int distancia = minEditDistance(S1, S2);
-        archivo_salida <<"Costo mínimo entre '" << S1 << "' y '" << S2 << "': " << distancia << endl; 
+        archivo_salida << "Palabras: " << linea << " Costo minimo: " << costoMin <<" Tiempo: "<< duracion.count()<<"ms"<< endl;
     }
 
     file.close();

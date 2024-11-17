@@ -1,12 +1,6 @@
 
 \epigraph{\textit{Dynamic programming is not about filling in tables. It's about smart recursion!}}{\citeauthor{algorithms_erickson}, \citeyear{algorithms_erickson} \cite{algorithms_erickson}}
 
-\begin{enumerate}[1)]
-    \item Describa la solución recursiva.
-    \item Escriba la relación de recurrencia, incluyendo condiciones y casos base.
-    \item Identifique subproblemas.
-    \item Defina estructura de datos a utilizar y especifique el orden de calculo que realiza su programa que utiliza programación dinámica. 
-\end{enumerate}
 
 \subsubsection{Descripción de la solución recursiva}
 
@@ -16,48 +10,52 @@
 
 \subsubsection{Estructura de datos y orden de cálculo}
 
+
 \subsubsection{Algoritmo utilizando programación dinámica}
 
 
 
 \begin{algorithm}[H]
-
     \SetKwProg{myproc}{Procedure}{}{}
-    \SetKwFunction{AlgorithmName}{AlgorithmName}  % Cambia 'AlgorithmName' por el nombre del enfoque elegido
-    \SetKwFunction{AuxiliaryFunction}{AuxiliaryFunction}  % Función auxiliar de ejemplo
+    \SetKwFunction{DynamicProgramming}{programacionDinamica}
     
     \DontPrintSemicolon
     \footnotesize
 
-    % Definición del algoritmo principal
-    \myproc{\AlgorithmName{S1, S2}}{
-    \uIf{S1 está vacía}{
-        \Return longitud de S2\;  % Return explícito si S1 está vacía
-    }
-    \uElseIf{S2 está vacía}{
-        \Return longitud de S1\;  % Return explícito si S2 está vacía
-    }
-    \uElseIf{S1[0] = S2[0]}{
-        \Return \AlgorithmName{S1[1:], S2[1:]}  % Llamada recursiva
-    }
-    \Else{
-        % Ejemplo de llamado a una función auxiliar
-        $costo \leftarrow \AuxiliaryFunction{S1, S2}$\;
-        \Return costo\;  % Retornar el valor calculado
-    }
-    }
+    \myproc{\DynamicProgramming{S1, S2, cost\_insert, cost\_delete, cost\_replace, cost\_transpose}}{
+        $m \leftarrow$ longitud de $S1$\;
+        $n \leftarrow$ longitud de $S2$\;
+        $dp \leftarrow$ matriz de tamaño $(m+1) \times (n+1)$ inicializada en $0$\;
+        
+        \For{$i \leftarrow 1$ \KwTo $m$}{
+            $dp[i][0] \leftarrow dp[i-1][0] + cost\_delete[S1[i-1] - \text{'a'}]$\;
+        }
+        \For{$j \leftarrow 1$ \KwTo $n$}{
+            $dp[0][j] \leftarrow dp[0][j-1] + cost\_insert[S2[j-1] - \text{'a'}]$\;
+        }
 
-    % Definición de la función auxiliar
-    \myproc{\AuxiliaryFunction{S1, S2}}{
-    % Acciones o cálculos auxiliares
-    \uIf{S1 y S2 son similares}{
-        \Return algún valor o costo\;  % Retornar el valor calculado por la función auxiliar
+        \For{$i \leftarrow 1$ \KwTo $m$}{
+            \For{$j \leftarrow 1$ \KwTo $n$}{
+                \If{$S1[i-1] == S2[j-1]$}{
+                    $dp[i][j] \leftarrow dp[i-1][j-1]$\;
+                }
+                \Else{
+                    $coste\_sustitucion \leftarrow cost\_replace[S1[i-1] - \text{'a'}][S2[j-1] - \text{'a'}] + dp[i-1][j-1]$\;
+                    $coste\_insercion \leftarrow cost\_insert[S2[j-1] - \text{'a'}] + dp[i][j-1]$\;
+                    $coste\_eliminacion \leftarrow cost\_delete[S1[i-1] - \text{'a'}] + dp[i-1][j]$\;
+                    $dp[i][j] \leftarrow \min(coste\_sustitucion, coste\_insercion, coste\_eliminacion)$\;
+
+                    \If{$i > 1$ \textbf{and} $j > 1$ \textbf{and} $S1[i-1] == S2[j-2]$ \textbf{and} $S1[i-2] == S2[j-1]$}{
+                        $coste\_transposicion \leftarrow cost\_transpose[S1[i-2] - \text{'a'}][S1[i-1] - \text{'a'}] + dp[i-2][j-2]$\;
+                        $dp[i][j] \leftarrow \min(dp[i][j], coste\_transposicion)$\;
+                    }
+                }
+            }
+        }
+
+        \Return $dp[m][n]$\;
     }
-    \Else{
-        % Llamar de nuevo a la función principal
-        \Return \AlgorithmName{S1 modificado, S2}\;  % Llamada recursiva y retorno del resultado
-    }
-    }
-    \caption{Este es solo un ejemplo de cómo estructurar el pseudocódigo, con retornos explícitos y llamados a funciones.}
-    \label{alg:mi_algoritmo_2}
+    \caption{Algoritmo de programación dinámica para calcular el costo mínimo de edición con inserción, eliminación, sustitución y transposición.}
+    \label{alg:programacion_dinamica}
 \end{algorithm}
+

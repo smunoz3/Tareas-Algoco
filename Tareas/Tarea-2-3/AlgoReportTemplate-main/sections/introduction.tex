@@ -4,6 +4,7 @@
 
 La distancia de edición es una medida que representa el número mínimo de operaciones necesarias para transformar una cadena en otra. Se utiliza ampliamente en áreas como la bioinformática, el procesamiento de texto y la inteligencia artificial, ya que permite cuantificar las diferencias entre secuencias de datos. Tradicionalmente, las operaciones permitidas para calcular la distancia de edición incluyen inserciones, eliminaciones y sustituciones, cada una con un costo asociado. En este informe, abordaremos una extensión de este problema, donde también se considera la operación de transposición (intercambio de dos caracteres adyacentes) y costos variables para cada operación.
 El objetivo de esta tarea es implementar y analizar dos algoritmos que calculen la distancia de edición extendida entre dos cadenas dadas. Estos algoritmos se basan en dos enfoques diferentes:
+
 \begin{itemize}
 \item1.	Fuerza Bruta: Este enfoque explora exhaustivamente todas las posibles secuencias de operaciones para encontrar el costo mínimo. Aunque es efectivo en problemas pequeños, su complejidad puede crecer exponencialmente, lo que lo hace poco eficiente para entradas grandes.
 \item2.	Programación Dinámica: Este enfoque optimiza el cálculo de la distancia de edición almacenando soluciones parciales y evitando cálculos redundantes. La programación dinámica es particularmente útil para problemas de optimización como el de la distancia de edición, ya que permite reducir significativamente el tiempo de ejecución en comparación con la fuerza bruta.

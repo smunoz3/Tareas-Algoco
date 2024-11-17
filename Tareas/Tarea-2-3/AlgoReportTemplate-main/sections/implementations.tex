@@ -2,7 +2,15 @@
     \textbf{La extensión máxima para esta sección es de 1 página.}
 \end{mdframed}
 
-Aquí deben explicar la estructura de sus programas haciendo referencias a los archivos y funciones de su entrega. No adjunte código en esta sección.
-\begin{mdframed}
-    Si se utiliza algún código, idea, o contenido extraído de otra fuente, este \textbf{debe} ser citado en el lugar exacto donde se utilice, en lugar de mencionarlo al final del informe.
-\end{mdframed}
+Para la fuerza bruta:
+El programa necesita cost\_delete.txt, cost\_insert.txt, cost\_replace.txt y \\ cost\_transpose.txt que serian los archivos de los costos cada operación, y al ejecutarse crea un archivo palabras.txt que contiene el costo de pasar la primera palabra a la segunda, costo de pasar la segunda a la primera y el costo mínimo. 
+Primero, se cargan matrices y vectores globales desde archivos dados para obtener los costos de estas operaciones. Luego, se usa una función calcularCosto que evalúa el costo de transformar una palabra en otra, considerando costos específicos de sustitución, inserción, eliminación, y transposición entre letras. Esta función primero intenta la transposición de letras, porque se toma el supuesto que hacer una trasposición es la operación menos costosa, para eso llama a costo\_trans que simplemente retorna el costo de hacer esa operación buscando la posición en la matriz. Si no se puede hacer una transposición se hace sustitución, para eso se llama a costo\_sub que busca en la matriz el costo de la operación. El proceso se hace letra a letra hasta que se alcanza el largo de la palabra más corta. Cuando finaliza se ajusta la palabra con costo\_ins o costo\_del según si se tiene que acortar o largar la palabra, estas funciones mencionadas funcionan buscando en su respectivo vector el costo de la letra la cual se quiera insertar o eliminar. Después de haber realizado el proceso de la primera palabra a la segunda se hace exactamente lo mismo, pero en sentido contrario para finalmente comparar cual es el costo mínimo entre las direcciones.   
+
+Consideraciones: La operacion trasnponer solo se realiza si al realizarlo ambas letras quedan correspondientes a las letras de la otra palabra.
+
+Para la progrmación dinámica:
+El programa lee un archivo de texto (palabras.txt) que contiene pares de cadenas separadas por un delimitador |. Para cada par, calcula la distancia mínima de edición utilizando la función minEditDistance, que llena una matriz de programación dinámica dp en la que cada elemento dp[i][j] representa el costo mínimo de convertir los primeros i caracteres de la cadena S1 en los primeros j caracteres de la cadena S2.
+
+La función de distancia mínima de edición se calcula considerando los costos de sustitución (, inserción  y eliminación. Además, existe una verificación para transponer caracteres adyacentes si es posible, lo que puede reducir el costo total.
+
+Al final, los resultados se escriben en un archivo de salida, donde se muestra el costo mínimo de edición entre cada par de cadenas leídas.

@@ -1,42 +1,181 @@
-\epigraph{\textit{``Indeed, brute force is a perfectly good technique in many cases; the real question is, can we use brute force in such a way that we avoid the worst-case behavior?''}}{--- \citeauthor{taocv3}, \citeyear{taocv3} \cite{taocv3}}
+Primero, se cargan matrices y vectores de los costos, se abren los archivos con las palabras a trasnformar, y procesa cada par de palabras estas estando dividas por un delimitador ("|"). El cálculo del costo se realiza mediante un algoritmo que considera transposiciones, sustituciones, inserciones y eliminaciones, usando funciones auxiliares que manejan matrices y vectores. El diseño incluye manejo de errores, como fallas al abrir archivos o al procesar datos, y asegura que los resultados se guarden correctamente, proporcionando robustez y funcionalidad para su uso en análisis lingüísticos o similares.
 
+
+La complejidad de este algoritmo es:
+\begin{itemize}
+\item Temporal: O(n*l), donde n es la cantidad de pares de palabras y l el largo promedio de ellas.
+\item Espacial: O(L), donde L es el largo de la palabra más larga.
+\end{itemize}
 \begin{algorithm}[H]
     \SetKwProg{myproc}{Procedure}{}{}
-    \SetKwFunction{AlgorithmName}{AlgorithmName}  % Cambia 'AlgorithmName' por el nombre del enfoque elegido
-    \SetKwFunction{AuxiliaryFunction}{AuxiliaryFunction}  % Función auxiliar de ejemplo
-    
+    \SetKwFunction{Main}{main}
+    \SetKwFunction{LoadMatrices}{cargarMatrices}
+    \SetKwFunction{CalculateCost}{calcularCosto}
+
     \DontPrintSemicolon
     \footnotesize
 
-    % Definición del algoritmo principal
-    \myproc{\AlgorithmName{S1, S2}}{
-    \uIf{S1 está vacía}{
-        \Return longitud de S2\;  % Return explícito si S1 está vacía
-    }
-    \uElseIf{S2 está vacía}{
-        \Return longitud de S1\;  % Return explícito si S2 está vacía
-    }
-    \uElseIf{S1[0] = S2[0]}{
-        \Return \AlgorithmName{S1[1:], S2[1:]}  % Llamada recursiva
-    }
-    \Else{
-        % Ejemplo de llamado a una función auxiliar
-        $costo \leftarrow \AuxiliaryFunction{S1, S2}$\;
-        \Return costo\;  % Retornar el valor calculado
-    }
-    }
+    % Definición del procedimiento principal
+    \myproc{\Main{}}{
+        \LoadMatrices{}\;  % Cargar matrices iniciales necesarias para el cálculo
+        archivo $\leftarrow$ abrir "palabras.txt" en modo lectura\;
+        archivo\_salida $\leftarrow$ abrir "resultado.txt" en modo escritura\;
 
-    % Definición de la función auxiliar
-    \myproc{\AuxiliaryFunction{S1, S2}}{
-    % Acciones o cálculos auxiliares
-    \uIf{S1 y S2 son similares}{
-        \Return algún valor o costo\;  % Retornar el valor calculado por la función auxiliar
+        \If{archivo no está abierto}{
+            mostrar "No se pudo abrir el archivo."\;
+            \Return 1\;  % Terminar el programa con código de error
+        }
+        \If{archivo\_salida no está abierto}{
+            mostrar "No se pudo abrir el archivo de salida."\;
+            \Return 1\;  % Terminar el programa con código de error
+        }
+
+        archivo $\rightarrow$ leer $N$\;
+        archivo $\rightarrow$ ignorar hasta nueva línea\;
+
+        \For{$i \leftarrow 0$ \KwTo $N-1$}{
+            línea $\leftarrow$ leer línea desde archivo\;
+
+            dividir línea en palabra1 y palabra2 usando '|' como delimitador\;
+            
+            costo1 $\leftarrow$ \CalculateCost{palabra1, palabra2}\;
+            costo2 $\leftarrow$ \CalculateCost{palabra2, palabra1}\;
+            costoMin $\leftarrow \min(costo1, costo2)$\;
+
+            archivo\_salida $\rightarrow$ escribir $costo1$, $costo2$, $costoMin$\;
+        }
+
+        cerrar archivo\;
+        cerrar archivo\_salida\;
+
+        \Return 0\;  % Terminar el programa exitosamente
     }
-    \Else{
-        % Llamar de nuevo a la función principal
-        \Return \AlgorithmName{S1 modificado, S2}\;  % Llamada recursiva y retorno del resultado
-    }
-    }
-    \caption{Este es solo un ejemplo de cómo estructurar el pseudocódigo, con retornos explícitos y llamados a funciones.}
-    \label{alg:mi_algoritmo_1}
+    \caption{Estructura del algoritmo para procesar pares de palabras y calcular costos mínimos.}
+    \label{alg:procesar_pares_palabras}
 \end{algorithm}
+
+
+\begin{algorithm}[H]
+    \SetKwProg{myproc}{Procedure}{}{}
+    \SetKwFunction{CalculateCost}{calcularCosto}
+    \SetKwFunction{TransCost}{costo\_trans}
+    \SetKwFunction{SubCost}{costo\_sub}
+    \SetKwFunction{InsCost}{costo\_ins}
+    \SetKwFunction{DelCost}{costo\_del}
+
+    \DontPrintSemicolon
+    \footnotesize
+
+    % Definición de la función de cálculo de costo
+    \myproc{\CalculateCost{palabra1, palabra2}}{
+        costoTotal $\leftarrow 0$\;
+        largoP1 $\leftarrow$ tamaño de palabra1\;
+        largoP2 $\leftarrow$ tamaño de palabra2\;
+        n $\leftarrow \min(largoP1, largoP2)$\;
+        $i \leftarrow 0$\;
+
+        \While{$i < n$}{
+            \If{$i + 1 < n$ \textbf{y} palabra1[$i + 1$] = palabra2[$i$] \textbf{y} palabra1[$i$] = palabra2[$i + 1$]}{
+                costoTotal $\leftarrow$ costoTotal $+$ \TransCost{palabra1[$i$], palabra1[$i + 1$]}\;
+                $i \leftarrow i + 2$\;  % Avanzar el índice en dos posiciones
+            }
+            \Else{
+                costoTotal $\leftarrow$ costoTotal $+$ \SubCost{palabra1[$i$], palabra2[$i$]}\;
+                $i \leftarrow i + 1$\;  % Avanzar el índice en una posición
+            }
+        }
+
+        % Costos de inserción o eliminación para caracteres restantes
+        \For{$i \leftarrow i$ \KwTo largoP2 $- 1$}{
+            costoTotal $\leftarrow$ costoTotal $+$ \InsCost{palabra2[$i$]}\;
+        }
+        \For{$i \leftarrow i$ \KwTo largoP1 $- 1$}{
+            costoTotal $\leftarrow$ costoTotal $+$ \DelCost{palabra1[$i$]}\;
+        }
+
+        \Return costoTotal\;  % Retornar el costo total calculado
+    }
+    \caption{Algoritmo para calcular el costo entre dos palabras considerando sustituciones, transposiciones, inserciones y eliminaciones.}
+    \label{alg:calcular_costo}
+\end{algorithm}
+
+\begin{algorithm}[H]
+    \SetKwProg{myproc}{Procedure}{}{}
+    \SetKwFunction{ReadMatrix}{leerMatriz}
+
+    \DontPrintSemicolon
+    \footnotesize
+
+    % Definición de la función para leer la matriz
+    \myproc{\ReadMatrix{nombreArchivo}}{
+        archivo $\leftarrow$ abrir nombreArchivo en modo lectura\;
+        matriz $\leftarrow$ matriz de $26 \times 26$ inicializada en ceros\;
+
+        \If{archivo no está abierto}{
+            mostrar "Error al abrir el archivo " + nombreArchivo\;
+            \Return matriz\;  % Retornar matriz vacía en caso de error
+        }
+
+        \For{$i \leftarrow 0$ \KwTo $25$}{
+            \For{$j \leftarrow 0$ \KwTo $25$}{
+                archivo $\rightarrow$ leer matriz[$i$][$j$]\;
+                \If{lectura falla}{
+                    mostrar "Error al leer el archivo en la posición (" + $i$ + ", " + $j$ + ")"\;
+                    cerrar archivo\;
+                    \Return matriz\;  % Retornar matriz parcial en caso de error
+                }
+            }
+        }
+
+        cerrar archivo\;
+        \Return matriz\;  % Retornar la matriz completa leída
+    }
+    \caption{Algoritmo para leer una matriz $26 \times 26$ desde un archivo.}
+    \label{alg:leer_matriz}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \SetKwProg{myproc}{Procedure}{}{}
+    \SetKwFunction{ReadVector}{leerVector}
+
+    \DontPrintSemicolon
+    \footnotesize
+
+    % Definición de la función para leer el vector
+    \myproc{\ReadVector{nombreArchivo}}{
+        archivo $\leftarrow$ abrir nombreArchivo en modo lectura\;
+        
+        \If{archivo no está abierto}{
+            lanzar \textbf{error} "No se pudo abrir el archivo."\;
+        }
+
+        vector $\leftarrow$ vector de tamaño $26$\;
+
+        \For{$i \leftarrow 0$ \KwTo $25$}{
+            archivo $\rightarrow$ leer vector[$i$]\;
+            \If{lectura falla}{
+                lanzar \textbf{error} "Error al leer el archivo de vector."\;
+            }
+        }
+
+        \If{tamaño de vector $\neq 26$}{
+            lanzar \textbf{error} "El archivo no contiene exactamente 26 números."\;
+        }
+
+        cerrar archivo\;
+        \Return vector\;  % Retornar el vector completo leido
+    }
+    \caption{Algoritmo para leer un vector de tamaño 26 desde un archivo, con manejo de errores.}
+    \label{alg:leer_vector}
+\end{algorithm}
+
+Ejemplo paso a paso:
+\begin{itemize}
+\item1.	Se toman el par de palabras S1="ABAA" y S2="BAAA" y se empieza a leer letra a latra el S1.
+\item2.	Se comprueba si S1[0]==S2[1] y si S1[1]==S2[0].
+\item3. Si es así, se hace una trasposición y se avanza en 2 el lector de la palabra. En este caso si es igual por lo que hay transposición.
+\item4. En caso contrario se hace una sustitución y se avanza en 1 el lector de la palabra.
+\item5. Se repite hasta el fin de la palabra para posteriormente ajustar la palabra con ins o del segun corresponda. En este caso no es necesario.
+\item6. Se repiten todos los pasos pero son S2 y se toma el costo mínimo. En este caso los costos quedan igual.
+\end{itemize}
